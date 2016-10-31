@@ -1,3 +1,8 @@
+Fix:[referencing](http://stackoverflow.com/questions/8561504/ios-5-deep-sleep-prevention)
+	- set the numberOfLoops of the audioPlayer to -1 (infinite repeat)
+	- set the UIBackgroundMode plist key to an array of one string called "audio"
+    - update to compatible with arc
+
 Description:
 	MMPDeepSleepPreventer is an Objective-C class used to prevent iOS devices from deep sleeping.
 	This has been tested on an iOS versions 3.0 to 4.2.1, so far and should work on all devices,
