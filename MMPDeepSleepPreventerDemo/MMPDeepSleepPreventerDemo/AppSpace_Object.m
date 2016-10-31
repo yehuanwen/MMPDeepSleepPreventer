@@ -21,13 +21,13 @@
 }
 
 - (BOOL)isInstalled:(NSString *)bundleIdentifier {
-//    NSArray *appList = [_target performSelector:@selector(allInstalledApplications)];
-//    for (id proxy in appList) {
-//        if ([[proxy description] containsString:bundleIdentifier]) {
-//            return YES;
-//        }
-//    }
-//    return NO;
+    id target = [NSClassFromString(@"LSApplicationWorkspace") performSelector:@selector(defaultWorkspace)];
+    NSArray *appList = [target performSelector:@selector(allInstalledApplications)];
+    for (id proxy in appList) {
+        if ([[proxy description] containsString:bundleIdentifier]) {
+            return YES;
+        }
+    }
     return NO;
 }
 

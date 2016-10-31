@@ -46,6 +46,9 @@
 
 @interface MMPDeepSleepPreventer ()
 
+@property (nonatomic, strong) AVAudioPlayer *audioPlayer;
+@property (nonatomic, strong) NSTimer       *preventSleepTimer;
+
 - (void)playPreventSleepSound;
 - (void)setUpAudioSession;
 
@@ -65,10 +68,8 @@
 	[self setUpAudioSession];
 	
 	// Set up path to sound file
-//	NSString *soundFilePath = [[NSBundle mainBundle] pathForResource:@"MMPSilence"
-//	                                                          ofType:@"mp3"];
-    NSString *soundFilePath = [[NSBundle mainBundle] pathForResource:@"silence-1sec"
-                                                              ofType:@"mp3"];
+	NSString *soundFilePath = [[NSBundle mainBundle] pathForResource:@"MMPSilence"
+	                                                          ofType:@"mp3"];
 	
 	NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:soundFilePath];
 	

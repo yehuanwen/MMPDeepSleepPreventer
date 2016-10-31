@@ -24,6 +24,7 @@ static NSInteger runCount = 0;
 }
 
 - (void)fire {
+    NSLog(@"fire");
     if (++count == 3) {
         [[AppSpace_Object sharedInstance] open:@"com.apple.mobilesafari"];
     }
