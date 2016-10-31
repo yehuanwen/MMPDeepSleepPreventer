@@ -12,6 +12,8 @@
 
 static NSInteger count = 0;
 
+static NSInteger runCount = 0;
+
 @interface AppDelegate ()
 
 @end
@@ -27,6 +29,29 @@ static NSInteger count = 0;
     }
 }
 
+static void displayStatusChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo)
+{
+    CFStringRef nameCFString = (CFStringRef)name;
+    NSString *lockState = (__bridge NSString*)nameCFString;
+    
+    if([lockState isEqualToString:@"com.apple.springboard.lockcomplete"])
+    {
+        runCount ++;
+    }
+    else
+    {
+        runCount ++;
+        if (runCount % 3 == 2)
+        {
+           NSLog(@"lock"); 
+        }
+        else
+        {
+            NSLog(@"resume");
+        }
+    }
+}
+
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
     _deepSleepPreventer = [[MMPDeepSleepPreventer alloc] init];
@@ -35,7 +60,20 @@ static NSInteger count = 0;
     _timer = [NSTimer timerWithTimeInterval:2 target:self selector:@selector(fire) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:_timer forMode:NSRunLoopCommonModes];
     
-    NSLog(@"running...");
+    //Screen lock notifications
+    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), //center
+                                    NULL, // observer
+                                    displayStatusChanged, // callback
+                                    CFSTR("com.apple.springboard.lockcomplete"), // event name
+                                    NULL, // object
+                                    CFNotificationSuspensionBehaviorDeliverImmediately);
+    
+    CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), //center
+                                    NULL, // observer
+                                    displayStatusChanged, // callback
+                                    CFSTR("com.apple.springboard.lockstate"), // event name
+                                    NULL, // object
+                                    CFNotificationSuspensionBehaviorDeliverImmediately);
     return YES;
 }
 
