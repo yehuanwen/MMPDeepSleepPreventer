@@ -46,21 +46,13 @@
 
 @interface MMPDeepSleepPreventer ()
 
-- (void)mmp_playPreventSleepSound;
-- (void)mmp_setUpAudioSession;
+- (void)playPreventSleepSound;
+- (void)setUpAudioSession;
 
 @end
 
 
 @implementation MMPDeepSleepPreventer
-
-
-#pragma mark -
-#pragma mark Synthesizes
-
-@synthesize audioPlayer       = audioPlayer_;
-@synthesize preventSleepTimer = preventSleepTimer_;
-
 
 #pragma mark -
 #pragma mark Creation and Destruction
@@ -70,19 +62,20 @@
 	if ( !(self = [super init]) )
 		return nil;
 	
-	[self mmp_setUpAudioSession];
+	[self setUpAudioSession];
 	
 	// Set up path to sound file
-	NSString *soundFilePath = [[NSBundle mainBundle] pathForResource:@"MMPSilence"
-	                                                          ofType:@"wav"];
+//	NSString *soundFilePath = [[NSBundle mainBundle] pathForResource:@"MMPSilence"
+//	                                                          ofType:@"mp3"];
+    NSString *soundFilePath = [[NSBundle mainBundle] pathForResource:@"silence-1sec"
+                                                              ofType:@"mp3"];
 	
 	NSURL *fileURL = [[NSURL alloc] initFileURLWithPath:soundFilePath];
 	
 	// Set up audio player with sound file
-	audioPlayer_ = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL
+	_audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:fileURL
 	                                                      error:nil];
-	[fileURL release];
-	
+    _audioPlayer.numberOfLoops = -1;// setting the numberOfLoops of the audioPlayer to -1 (infinite repeat)
 	[self.audioPlayer prepareToPlay];
 	
 	// You may want to set this to 0.0 even if your sound file is silent.
@@ -91,16 +84,6 @@
 	
     return self;
 }
-
-
-- (void)dealloc
-{
-	[preventSleepTimer_ release];
-	[audioPlayer_       release];
-	
-	[super dealloc];
-}
-
 
 #pragma mark -
 #pragma mark Public Methods
@@ -112,15 +95,14 @@
 	// To prevent the iPhone from falling asleep due to timing/performance issues, we play a sound file every five seconds.
 	
 	// We create a new repeating timer, that begins firing immediately and then every five seconds afterwards.
-	// Every time it fires, it calls -mmp_playPreventSleepSound.
+	// Every time it fires, it calls -playPreventSleepSound.
 	NSTimer *preventSleepTimer = [[NSTimer alloc] initWithFireDate:[NSDate date]
 	                                                      interval:5.0
 	                                                        target:self
-	                                                      selector:@selector(mmp_playPreventSleepSound)
+	                                                      selector:@selector(playPreventSleepSound)
 	                                                      userInfo:nil
 	                                                       repeats:YES];
 	self.preventSleepTimer = preventSleepTimer;
-	[preventSleepTimer release];
 	
 	// Add the timer to the current run loop.
 	[[NSRunLoop currentRunLoop] addTimer:self.preventSleepTimer
@@ -138,13 +120,13 @@
 #pragma mark -
 #pragma mark Private Methods
 
-- (void)mmp_playPreventSleepSound
+- (void)playPreventSleepSound
 {
 	[self.audioPlayer play];
 }
 
 
-- (void)mmp_setUpAudioSession
+- (void)setUpAudioSession
 {
 	// Initialize audio session
 	AudioSessionInitialize
